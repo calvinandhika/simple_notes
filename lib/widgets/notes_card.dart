@@ -19,7 +19,7 @@ class NotesCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (builder) => NotesDetailPage(),
+            builder: (context) => NotesDetailPage(),
           ),
         );
       },

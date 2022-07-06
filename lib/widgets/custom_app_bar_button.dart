@@ -5,26 +5,27 @@ class CustomAppBarButton extends StatelessWidget {
   final Function onTap;
   final Icon buttonIcon;
   final bool isDark;
+  final EdgeInsets? margin;
 
   const CustomAppBarButton({
     Key? key,
     required this.onTap,
     required this.buttonIcon,
     required this.isDark,
+    this.margin,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: InkWell(
-        onTap: () async {
-          return onTap();
+      child: GestureDetector(
+        onTap: () {
+          onTap(context);
         },
-        borderRadius: BorderRadius.circular(15),
         child: Container(
           width: 50,
           height: 50,
-          margin: const EdgeInsets.only(right: 15),
+          margin: (margin == null) ? const EdgeInsets.only(right: 15) : margin,
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(
               Radius.circular(15),

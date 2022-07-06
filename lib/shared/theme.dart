@@ -34,6 +34,11 @@ TextStyle bodyTextStyle = const TextStyle(
   fontFamily: 'Nunito',
 );
 
+TextStyle body2TextStyle = const TextStyle(
+  fontSize: 18,
+  fontFamily: 'Nunito',
+);
+
 ThemeData dark = ThemeData(
   appBarTheme: AppBarTheme(
     color: kDarkGreyColor,
