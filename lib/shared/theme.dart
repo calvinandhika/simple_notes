@@ -13,15 +13,19 @@ Color kWhiteColor = const Color(0xFFFFFFFF);
 Color kDarkGreyColor = const Color(0xFF252525);
 Color kLightGreyColor = const Color(0xFF3B3B3B);
 
+TextStyle h1TextStyle = const TextStyle(
+  fontSize: 43,
+  fontWeight: FontWeight.bold,
+  fontFamily: 'Nunito',
+);
 TextStyle h2TextStyle = const TextStyle(
   fontSize: 35,
   fontWeight: FontWeight.w600,
   fontFamily: 'Nunito',
 );
-
-TextStyle h1TextStyle = const TextStyle(
-  fontSize: 43,
-  fontWeight: FontWeight.bold,
+TextStyle h3TextStyle = const TextStyle(
+  fontSize: 25,
+  fontWeight: FontWeight.w600,
   fontFamily: 'Nunito',
 );
 

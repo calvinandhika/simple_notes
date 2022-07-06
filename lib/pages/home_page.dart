@@ -1,7 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_notes/shared/theme.dart';
 import 'package:simple_notes/widgets/custom_app_bar_button.dart';
+import 'package:simple_notes/widgets/notes_card.dart';
+
+List<String> titles = [
+  'How to make personale brand',
+  'how to',
+  'good boi yiha',
+  'nah ini agak panjang jadinya gimana ni hasilnya?',
+  'How to make personale brand',
+  'how to',
+  'good boi yiha',
+  'nah ini agak panjang jadinya gimana ni hasilnya?',
+  'How to make personale brand',
+  'how to',
+  'good boi yiha',
+  'nah ini agak panjang jadinya gimana ni hasilnya?',
+  'plepce kiga ua'
+];
+
+List<Color> colors = [
+  kPeachColor,
+  kOrangeColor,
+  kBlueColor,
+  kGreenColor,
+  kPurpleColor,
+  kPinkColor,
+  kToscaColor,
+];
 
 class SimpleNotes extends StatefulWidget {
   const SimpleNotes({Key? key}) : super(key: key);
@@ -13,6 +41,17 @@ class SimpleNotes extends StatefulWidget {
 class _SimpleNotesState extends State<SimpleNotes> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Future<bool> _isDark;
+
+  Future<void> toggleTheme() async {
+    final SharedPreferences prefs = await _prefs;
+    final bool isDark = prefs.getBool('isDark') ?? true;
+
+    setState(() {
+      _isDark = prefs.setBool('isDark', !isDark).then((_) {
+        return !isDark;
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -29,6 +68,7 @@ class _SimpleNotesState extends State<SimpleNotes> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -54,7 +94,7 @@ class _SimpleNotesState extends State<SimpleNotes> {
                   ),
                   CustomAppBarButton(
                     buttonIcon: const Icon(Icons.info_outline),
-                    onTap: () {},
+                    onTap: toggleTheme,
                     isDark: isDark,
                   ),
                 ],
@@ -70,12 +110,21 @@ class _SimpleNotesState extends State<SimpleNotes> {
                 ),
                 child: FloatingActionButton(
                   onPressed: () {},
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                 ),
               ),
-              body: Center(
-                child: Container(
-                  child: Text('Hello World'),
+              body: RefreshIndicator(
+                onRefresh: () async {},
+                child: MasonryGridView.count(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: titles.length,
+                  crossAxisCount: 2,
+                  itemBuilder: (context, index) {
+                    return NotesCard(
+                      title: titles[index],
+                      color: colors[index % 7],
+                    );
+                  },
                 ),
               ),
             ),

@@ -17,7 +17,9 @@ class CustomAppBarButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: InkWell(
-        onTap: onTap(),
+        onTap: () async {
+          return onTap();
+        },
         borderRadius: BorderRadius.circular(15),
         child: Container(
           width: 50,
