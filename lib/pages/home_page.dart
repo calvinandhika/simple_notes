@@ -114,41 +114,46 @@ class _HomePageState extends State<HomePage> {
                             'Proudly Made By\nCalvin Andhika',
                             style: h3TextStyle,
                           ),
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Email:\ncalvin.andhika@gmail.com\n',
-                                style: body2TextStyle,
+                          content: SizedBox(
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Email:\ncalvin.andhika@gmail.com\n',
+                                    style: body2TextStyle,
+                                  ),
+                                  Text(
+                                    'GitHub:\ngithub.com/calvinandhika/simple_notes',
+                                    style: body2TextStyle,
+                                  ),
+                                  const SizedBox(
+                                    height: 50,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      'Toggle Dark Theme',
+                                      style: bodyTextStyle,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Consumer<ThemeProvider>(
+                                    builder: (context, value, child) {
+                                      return CustomAppBarButton(
+                                          onTap: toggleTheme,
+                                          buttonIcon: value.isDark
+                                              ? Icon(Icons.toggle_on_outlined)
+                                              : Icon(Icons.toggle_off_rounded),
+                                          isDark: isDark);
+                                    },
+                                  )
+                                ],
                               ),
-                              Text(
-                                'GitHub:\ngithub.com/calvinandhika/simple_notes',
-                                style: body2TextStyle,
-                              ),
-                              const SizedBox(
-                                height: 50,
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Toggle Dark Theme',
-                                  style: bodyTextStyle,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Consumer<ThemeProvider>(
-                                builder: (context, value, child) {
-                                  return CustomAppBarButton(
-                                      onTap: toggleTheme,
-                                      buttonIcon: value.isDark
-                                          ? Icon(Icons.toggle_on_outlined)
-                                          : Icon(Icons.toggle_off_rounded),
-                                      isDark: isDark);
-                                },
-                              )
-                            ],
+                            ),
                           ),
                           actions: <Widget>[
                             TextButton(
