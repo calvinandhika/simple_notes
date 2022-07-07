@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_notes/pages/notes_edit_page.dart';
+import 'package:simple_notes/data/db/notes_database.dart';
+import 'package:simple_notes/data/model/notes_model.dart';
+import 'package:simple_notes/pages/notes_add_edit_page.dart';
 import 'package:simple_notes/provider/theme_provider.dart';
 import 'package:simple_notes/shared/theme.dart';
 import 'package:simple_notes/widgets/custom_app_bar_button.dart';
 
 class NotesDetailPage extends StatelessWidget {
-  NotesDetailPage({Key? key}) : super(key: key);
+  final NoteModel note;
+  final Future<void> Function()? fetchAllNotes;
+
+  NotesDetailPage({
+    Key? key,
+    required this.note,
+    this.fetchAllNotes,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +39,22 @@ class NotesDetailPage extends StatelessWidget {
             onTap: (context) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotesEditPage()),
-              );
+                MaterialPageRoute(
+                  builder: (context) => NotesAddEditPage(
+                    fetchAllNotes: fetchAllNotes,
+                    note: note,
+                  ),
+                ),
+              ).then((value) => fetchAllNotes!());
+              ;
+            },
+            isDark: isDark,
+          ),
+          CustomAppBarButton(
+            buttonIcon: const Icon(Icons.delete),
+            onTap: (context) {
+              NotesDatabase().delete(note.id!);
+              Navigator.pop(context);
             },
             isDark: isDark,
           ),
@@ -42,21 +65,21 @@ class NotesDetailPage extends StatelessWidget {
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Book Review : The Design of Everyday Things by Don Norman',
+                note.title,
                 style: h2TextStyle,
               ),
               Text(
-                '''
-            
-The Design of Everyday Things is required reading for anyone who is interested in the user experience. I personally like to reread it every year or two.
-
-Norman is aware of the durability of his work and the applicability of his principles to multiple disciplines. 
-
-If you know the basics of design better than anyone else, you can apply them flawlessly anywhere.
-
-''',
+                'category - ${note.category}',
+                style: h3TextStyle,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                note.description,
                 style: bodyTextStyle,
               ),
             ],

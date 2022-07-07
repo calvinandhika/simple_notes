@@ -2,36 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_notes/data/db/notes_database.dart';
+import 'package:simple_notes/data/model/notes_model.dart';
+import 'package:simple_notes/pages/notes_add_edit_page.dart';
 import 'package:simple_notes/provider/theme_provider.dart';
 import 'package:simple_notes/shared/theme.dart';
 import 'package:simple_notes/widgets/custom_app_bar_button.dart';
 import 'package:simple_notes/widgets/notes_card.dart';
-
-List<String> titles = [
-  'How to make personale brand',
-  'how to',
-  'good boi yiha',
-  'nah ini agak panjang jadinya gimana ni hasilnya?',
-  'How to make personale brand',
-  'how to',
-  'good boi yiha',
-  'nah ini agak panjang jadinya gimana ni hasilnya?',
-  'How to make personale brand',
-  'how to',
-  'good boi yiha',
-  'nah ini agak panjang jadinya gimana ni hasilnya?',
-  'plepce kiga ua'
-];
-
-List<Color> colors = [
-  kPeachColor,
-  kOrangeColor,
-  kBlueColor,
-  kGreenColor,
-  kPurpleColor,
-  kPinkColor,
-  kToscaColor,
-];
+import 'package:simple_notes/widgets/show_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -43,6 +21,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Future<bool> _isDark;
+  late List<NoteModel> notes;
+  bool isLoading = false;
 
   void toggleTheme(BuildContext context) async {
     final SharedPreferences prefs = await _prefs;
@@ -61,7 +41,16 @@ class _HomePageState extends State<HomePage> {
     _isDark = _prefs.then((prefs) {
       return prefs.getBool('isDark') ?? true;
     });
+
+    fetchAllNotes();
+
     super.initState();
+  }
+
+  Future<void> fetchAllNotes() async {
+    setState(() => isLoading = true);
+    notes = await NotesDatabase().readAllNotes();
+    setState(() => isLoading = false);
   }
 
   @override
@@ -90,113 +79,81 @@ class _HomePageState extends State<HomePage> {
             //set default dark or light theme
             bool isDark = snapshot.data as bool;
             context.read<ThemeProvider>().setDefaultTheme(isDark);
-
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Simple Notes',
-              theme: isDark ? dark : light,
-              home: Scaffold(
-                appBar: AppBar(
-                  toolbarHeight: 100,
-                  actions: [
-                    CustomAppBarButton(
-                      buttonIcon: const Icon(Icons.search),
-                      onTap: (context) {},
-                      isDark: isDark,
+            if (isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Simple Notes',
+                theme: isDark ? dark : light,
+                home: Scaffold(
+                  appBar: AppBar(
+                    toolbarHeight: 100,
+                    actions: [
+                      ShowDialog(toggleTheme: toggleTheme),
+                    ],
+                    title: Text(
+                      'Notes',
+                      style: h1TextStyle,
                     ),
-                    CustomAppBarButton(
-                      buttonIcon: const Icon(Icons.info_outline),
-                      // onTap: toggleTheme,
-                      onTap: (context) => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text(
-                            'Proudly Made By\nCalvin Andhika',
-                            style: h3TextStyle,
-                          ),
-                          content: SizedBox(
-                            height: MediaQuery.of(context).size.height / 2.5,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Email:\ncalvin.andhika@gmail.com\n',
-                                    style: body2TextStyle,
-                                  ),
-                                  Text(
-                                    'GitHub:\ngithub.com/calvinandhika/simple_notes',
-                                    style: body2TextStyle,
-                                  ),
-                                  const SizedBox(
-                                    height: 50,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      'Toggle Dark Theme',
-                                      style: bodyTextStyle,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Consumer<ThemeProvider>(
-                                    builder: (context, value, child) {
-                                      return CustomAppBarButton(
-                                          onTap: toggleTheme,
-                                          buttonIcon: value.isDark
-                                              ? Icon(Icons.toggle_on_outlined)
-                                              : Icon(Icons.toggle_off_rounded),
-                                          isDark: isDark);
-                                    },
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'Close'),
-                              child: const Text('Close'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      isDark: isDark,
+                  ),
+                  floatingActionButton: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 10,
+                      bottom: 20,
                     ),
-                  ],
-                  title: Text(
-                    'Notes',
-                    style: h1TextStyle,
-                  ),
-                ),
-                floatingActionButton: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 10,
-                    bottom: 20,
-                  ),
-                  child: FloatingActionButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.add),
-                  ),
-                ),
-                body: RefreshIndicator(
-                  onRefresh: () async {},
-                  child: MasonryGridView.count(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: titles.length,
-                    crossAxisCount: 2,
-                    itemBuilder: (context, index) {
-                      return NotesCard(
-                        title: titles[index],
-                        color: colors[index % 7],
+                    child: Builder(builder: (context) {
+                      return FloatingActionButton(
+                        onPressed: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NotesAddEditPage(),
+                            ),
+                          ).then((_) => fetchAllNotes());
+                        },
+                        child: const Icon(Icons.add),
                       );
+                    }),
+                  ),
+                  body: RefreshIndicator(
+                    onRefresh: () async {
+                      fetchAllNotes();
                     },
+                    child: notes.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 300,
+                                  child: Image.asset(
+                                      'assets/image_file_not_found.png'),
+                                ),
+                                Text(
+                                  'Create Your First Note!',
+                                  style: bodyTextStyle,
+                                )
+                              ],
+                            ),
+                          )
+                        : MasonryGridView.count(
+                            itemCount: notes.length,
+                            crossAxisCount: 2,
+                            itemBuilder: (context, index) {
+                              return NotesCard(
+                                note: notes[index],
+                                color: colors[index % 7],
+                                fetchAllNotes: fetchAllNotes,
+                              );
+                            },
+                          ),
                   ),
                 ),
-              ),
-            );
+              );
+            }
           }
           return const SizedBox();
         },

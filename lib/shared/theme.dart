@@ -13,6 +13,16 @@ Color kWhiteColor = const Color(0xFFFFFFFF);
 Color kDarkGreyColor = const Color(0xFF252525);
 Color kLightGreyColor = const Color(0xFF3B3B3B);
 
+List<Color> colors = [
+  kPeachColor,
+  kOrangeColor,
+  kBlueColor,
+  kGreenColor,
+  kPurpleColor,
+  kPinkColor,
+  kToscaColor,
+];
+
 TextStyle h1TextStyle = const TextStyle(
   fontSize: 43,
   fontWeight: FontWeight.bold,

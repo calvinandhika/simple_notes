@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:simple_notes/data/model/notes_model.dart';
 import 'package:simple_notes/pages/notes_detail_page.dart';
 import 'package:simple_notes/shared/theme.dart';
+import 'package:intl/intl.dart';
 
 class NotesCard extends StatelessWidget {
-  final String title;
+  final NoteModel note;
+  final Future<void> Function()? fetchAllNotes;
   Color? color;
 
   NotesCard({
     Key? key,
-    required this.title,
+    required this.note,
+    this.fetchAllNotes,
     this.color,
   }) : super(key: key);
 
@@ -19,9 +23,12 @@ class NotesCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NotesDetailPage(),
+            builder: (context) => NotesDetailPage(
+              note: note,
+              fetchAllNotes: fetchAllNotes,
+            ),
           ),
-        );
+        ).then((value) => fetchAllNotes!());
       },
       child: Container(
         width: double.infinity,
@@ -35,7 +42,7 @@ class NotesCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              note.title,
               style: h3TextStyle.copyWith(
                 color: kBlackColor,
                 height: 1.25,
@@ -43,7 +50,7 @@ class NotesCard extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              'May 21, 2020',
+              DateFormat('MMM dd, yyyy').format(note.date),
               style: bodyTextStyle.copyWith(
                 color: kLightGreyColor,
                 fontSize: 16,
