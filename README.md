@@ -1,6 +1,6 @@
 # simple_notes
 
-A new Flutter project.
+https://play.google.com/store/apps/details?id=com.calvinandhika.simple_notes
 
 ## Getting Started
 
